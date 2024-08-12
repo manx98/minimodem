@@ -64,5 +64,6 @@ extern const struct simpleaudio_backend simpleaudio_backend_sndfile;
 extern const struct simpleaudio_backend simpleaudio_backend_alsa;
 extern const struct simpleaudio_backend simpleaudio_backend_pulseaudio;
 extern const struct simpleaudio_backend simpleaudio_backend_sndio;
+extern const struct simpleaudio_backend simpleaudio_backend_win;
 
 #endif

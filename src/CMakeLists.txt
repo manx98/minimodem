@@ -56,7 +56,7 @@ if(USE_BENCHMARKS)
 endif ()
 
 if (WIN32)
-    list(APPEND DEPS_LIBS ws2_32)
+    list(APPEND DEPS_LIBS ws2_32 winmm)
 endif ()
 
 set(BAUDOT_SRC baudot.h baudot.c)
@@ -72,6 +72,7 @@ list(APPEND SIMPLEAUDIO_SRC
         simpleaudio-sndio.c
         simpleaudio-benchmark.c
         simpleaudio-sndfile.c
+        simpleaudio-win.cpp
         simpleaudio.c)
 
 if(WIN32)

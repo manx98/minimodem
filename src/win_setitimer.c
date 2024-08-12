@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdint.h>
 #include <stdatomic.h>
 
 typedef void(*CallbackFunc)();
@@ -13,7 +14,7 @@ typedef void(*CallbackFunc)();
 // 队列节点结构
 typedef struct Node {
     CallbackFunc data;
-    long int delay;
+    int64_t timeout;
     struct Node* next;
 } Node;
 
@@ -38,11 +39,25 @@ void queue_destroy(Queue* q) {
     pthread_cond_destroy(&q->cond_non_empty);
 }
 
+uint64_t GetMicroseconds() {
+    LARGE_INTEGER frequency;
+    LARGE_INTEGER counter;
+
+    // 获取计数器频率，单位是每秒多少计数
+    QueryPerformanceFrequency(&frequency);
+
+    // 获取当前计数器值
+    QueryPerformanceCounter(&counter);
+
+    // 计算微秒数
+    return counter.QuadPart * 1000000 / frequency.QuadPart;
+}
+
 // 入队操作
 void enqueue(Queue* q, CallbackFunc value, long int delay) {
     Node* new_node = malloc(sizeof(Node));
     new_node->data = value;
-    new_node->delay = delay;
+    new_node->timeout = GetMicroseconds() + delay;
     new_node->next = NULL;
     pthread_mutex_lock(&q->lock);
     if (q->rear) {
@@ -101,7 +116,11 @@ void* task_handler(void* arg)
 {
     while (1) {
         Node* node = dequeue(task_queue);
-        usSleep(node->delay);
+        auto delay = GetMicroseconds() - node->timeout;
+        if(delay > 0)
+        {
+            usSleep(delay);
+        }
         node->data();
         free(node);
     }
@@ -109,11 +128,11 @@ void* task_handler(void* arg)
 
 void init_win_setitimer()
 {
-    if(!timer_thread)
+    if(!task_queue)
     {
         task_queue = malloc(sizeof(Queue));
         queue_init(task_queue);
-        timer_thread = pthread_create(task_handler, NULL, &task_handler, NULL);
+        pthread_create(timer_thread, NULL, &task_handler, NULL);
     }
 }
 
