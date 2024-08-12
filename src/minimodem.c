@@ -36,7 +36,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #else
+#ifndef VERSION
 #define VERSION "unknown"
+#endif
 #endif
 
 #include "simpleaudio.h"
