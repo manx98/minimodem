@@ -34,6 +34,12 @@ static unsigned int sin_table_len;
 static short *sin_table_short;
 static float *sin_table_float;
 
+#if WIN32
+void* bzero(void* s, size_t n) {
+	return memset(s, 0, n);
+}
+#endif
+
 void
 simpleaudio_tone_init( unsigned int new_sin_table_len, float mag )
 {

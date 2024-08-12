@@ -55,6 +55,10 @@ if(USE_BENCHMARKS)
     add_compile_definitions(USE_BENCHMARKS=1)
 endif ()
 
+if (WIN32)
+    list(APPEND DEPS_LIBS ws2_32)
+endif ()
+
 set(BAUDOT_SRC baudot.h baudot.c)
 
 set(FSK_SRC fsk.h fsk.c)
@@ -69,6 +73,10 @@ list(APPEND SIMPLEAUDIO_SRC
         simpleaudio-benchmark.c
         simpleaudio-sndfile.c
         simpleaudio.c)
+
+if(WIN32)
+    list(APPEND SIMPLEAUDIO_SRC win_setitimer.h win_setitimer.c)
+endif ()
 
 set(UIC_SRC uic_codes.h uic_codes.c)
 
