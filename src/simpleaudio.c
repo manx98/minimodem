@@ -27,11 +27,16 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #else
-# define USE_PULSEAUDIO 1
-# define USE_ALSA 1
-# define USE_SNDIO 1
+#ifndef USE_ALSA
+	# define USE_PULSEAUDIO 1
 #endif
-
+#ifndef USE_ALSA
+	# define USE_ALSA 1
+#endif
+#ifndef USE_SNDIO
+	# define USE_SNDIO 1
+#endif
+#endif
 simpleaudio *
 simpleaudio_open_stream(
 		sa_backend_t	sa_backend,
