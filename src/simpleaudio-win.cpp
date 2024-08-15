@@ -63,7 +63,11 @@ sa_win_write(simpleaudio* sa, void* buf, size_t nframes)
 	if(handle->need_wait)
 	{
 		// 阻塞直到音频播放完成
-		WaitForSingleObject(handle->wait, INFINITE);
+		auto ret = waveOutReset(handle->hWaveOut);
+		if(ret != MMSYSERR_NOERROR){
+			fprintf(stderr, "Failed to reset audio device, MMRESULT=%d\n", ret);
+			return -1;
+		}
 	} else
 	{
 		handle->need_wait = true;
@@ -72,18 +76,17 @@ sa_win_write(simpleaudio* sa, void* buf, size_t nframes)
 	handle->waveHeader.dwBufferLength = nframes * sa->backend_framesize;
 	handle->waveHeader.dwFlags = 0;
 	handle->waveHeader.dwLoops = 0;
-	write(handle->fd, handle->waveHeader.lpData, handle->waveHeader.dwBufferLength);
-	// auto ret = waveOutPrepareHeader(handle->hWaveOut, &handle->waveHeader, sizeof(WAVEHDR));
-	// if (ret != MMSYSERR_NOERROR) {
-	// 	fprintf(stderr, "Failed to prepare audio data, MMRESULT=%d\n", ret);
-	// 	return -1;
-	// }
-	//
-	// ret = waveOutWrite(handle->hWaveOut, &handle->waveHeader, sizeof(WAVEHDR));
-	// if (ret != MMSYSERR_NOERROR) {
-	// 	fprintf(stderr, "Failed to write audio data, MMRESULT=%d\n", ret);
-	// 	return -1;
-	// }
+	auto ret = waveOutPrepareHeader(handle->hWaveOut, &handle->waveHeader, sizeof(WAVEHDR));
+	if (ret != MMSYSERR_NOERROR) {
+		fprintf(stderr, "Failed to prepare audio data, MMRESULT=%d\n", ret);
+		return -1;
+	}
+
+	ret = waveOutWrite(handle->hWaveOut, &handle->waveHeader, sizeof(WAVEHDR));
+	if (ret != MMSYSERR_NOERROR) {
+		fprintf(stderr, "Failed to write audio data, MMRESULT=%d\n", ret);
+		return -1;
+	}
 	return nframes;
 }
 
@@ -159,9 +162,6 @@ sa_win_open_stream(
 		{
 			fprintf(stderr, "Failed to open waveform audio device.\n");
 			success = false;
-		} else
-		{
-			handle->fd = open("E:/code/c++/minimodem/tests/out.pcm", O_WRONLY | O_CREAT);
 		}
 	}
 	if (!success)
