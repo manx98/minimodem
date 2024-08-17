@@ -87,9 +87,7 @@ simpleaudio_open_stream(
 #endif
 
 	case SA_BACKEND_SYSDEFAULT:
-#if WIN32
-		sa->backend = &simpleaudio_backend_win;
-#elif USE_PULSEAUDIO
+#if USE_PULSEAUDIO
 	    sa->backend = &simpleaudio_backend_pulseaudio;
 #elif USE_ALSA
 	    sa->backend = &simpleaudio_backend_alsa;

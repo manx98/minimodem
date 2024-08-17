@@ -201,7 +201,7 @@ static void fsk_transmit_stdin(
 		{
 			// When stdin blocks we "emit idle tone", for a duration of
 			// idle_carrier_usec.  If !tx_interactive (i.e. writing to an
-			// audio file) make the select timeout the same duration.
+			// audio file) make the select timeout the same duration.11111
 			tv_idletimeout.tv_usec = idle_carrier_usec;
 		}
 

@@ -33,7 +33,6 @@ class MiniModemRecipe(ConanFile):
         "shared": [True, False],
         "fPIC": [True, False],
         "with_alsa": [True, False],
-        "with_sendfile": [True, False],
         "with_pulseaudio": [True, False],
         "with_benchmarks": [True, False],
     }
@@ -44,7 +43,6 @@ class MiniModemRecipe(ConanFile):
         "shared": False,
         "fPIC": True,
         "with_alsa": True,
-        "with_sendfile": True,
         "with_pulseaudio": False,
         "with_benchmarks": True,
     }
@@ -77,8 +75,6 @@ class MiniModemRecipe(ConanFile):
                 self.requires("libalsa/1.2.10", headers=True, libs=True)
             if self.options.with_pulseaudio:
                 self.requires("pulseaudio/17.0", headers=True, libs=True)
-            if self.options.with_sendfile:
-                self.requires("libsndfile/1.2.2", headers=True, libs=True)
 
     # generate 方法将在依赖图的计算和安装之后运行。这意味着它将在 conan install 命令之后运行，或者当在缓存中构建包时，它将在调用 build() 方法之前运行。
     def generate(self):
@@ -94,7 +90,6 @@ class MiniModemRecipe(ConanFile):
         if self.settings.os == "Linux":
             tc.cache_variables["USE_ALSA"] = True if self.options.with_alsa else False
             tc.cache_variables["USE_PULSEAUDIO"] = True if self.options.with_pulseaudio else False
-            tc.cache_variables["USE_SNDFILE"] = True if self.options.with_sendfile else False
         tc.cache_variables["USE_BENCHMARKS"] = True if self.options.with_benchmarks else False
         tc.cache_variables["USE_SNDIO"] = False
         # 应用上面设置的环境变量
